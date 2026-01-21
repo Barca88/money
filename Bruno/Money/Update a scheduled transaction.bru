@@ -1,0 +1,25 @@
+meta {
+  name: Update a scheduled transaction
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:8080/api/transactions/3
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "accountOrigin": "123456789",
+    "accountDestination": "987654321",
+    "scheduleDate": "2026-02-15",
+    "amount": 100.00
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

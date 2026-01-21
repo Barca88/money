@@ -1,0 +1,25 @@
+meta {
+  name: Create Transaction
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/api/transactions
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "accountOrigin": "123456789",
+    "accountDestination": "987654321",
+    "scheduleDate": "2026-01-21",
+    "amount": 500.00
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,15 @@
+meta {
+  name: Delete a scheduled transaction
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:8080/api/transactions/3
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}
