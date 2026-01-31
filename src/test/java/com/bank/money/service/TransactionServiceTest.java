@@ -14,16 +14,19 @@ import org.mockito.Mockito;
 import com.bank.money.domain.Transaction;
 import com.bank.money.exception.BusinessException;
 import com.bank.money.repository.TransactionRepository;
+import com.bank.money.service.strategy.FeeStrategyFactory;
 
 class TransactionServiceTest {
 
     private TransactionRepository repository;
+    private FeeStrategyFactory feeStrategyFactory;
     private TransactionService service;
 
     @BeforeEach
     void setup() {
         repository = Mockito.mock(TransactionRepository.class);
-        service = new TransactionService(repository);
+        feeStrategyFactory = new FeeStrategyFactory();
+        service = new TransactionService(repository, feeStrategyFactory);
     }
 
     @Test

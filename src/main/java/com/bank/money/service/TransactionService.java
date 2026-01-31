@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import com.bank.money.domain.Transaction;
 import com.bank.money.exception.BusinessException;
 import com.bank.money.repository.TransactionRepository;
+import com.bank.money.service.strategy.FeeStrategy;
+import com.bank.money.service.strategy.FeeStrategyFactory;
 
 /**
  * Service layer for managing transaction business logic.
@@ -36,14 +38,17 @@ import com.bank.money.repository.TransactionRepository;
 public class TransactionService {
 
     private final TransactionRepository repository;
+    private final FeeStrategyFactory feeStrategyFactory;
 
     /**
-     * Constructs a new TransactionService with the specified repository.
-     *
+     * Constructs a new TransactionService with the specified repository and fee strategy factory.
+     * 
      * @param repository the transaction repository for data access
+     * @param feeStrategyFactory the factory for creating fee calculation strategies
      */
-    public TransactionService(TransactionRepository repository) {
+    public TransactionService(TransactionRepository repository, FeeStrategyFactory feeStrategyFactory) {
         this.repository = repository;
+        this.feeStrategyFactory = feeStrategyFactory;
     }
 
     /**
@@ -121,6 +126,7 @@ public class TransactionService {
      * <p>
      * The fee is determined by the amount and the number of days between the current
      * date and the scheduled date according to the business rules defined in the class documentation.
+     * Uses the Strategy pattern with a Factory to select the appropriate fee calculation strategy.
      * </p>
      *
      * @param amount the transaction amount
@@ -131,25 +137,7 @@ public class TransactionService {
         long daysBetween = ChronoUnit.DAYS.between(LocalDate.now(), scheduleDate);
         System.out.println("Days between today and scheduleDate: " + daysBetween);
 
-        if (amount.compareTo(BigDecimal.valueOf(1000)) <= 0) {
-            if (daysBetween == 0) { // same day
-                return amount.multiply(BigDecimal.valueOf(0.03)).add(BigDecimal.valueOf(3));
-            }
-        } else if (amount.compareTo(BigDecimal.valueOf(2000)) <= 0) {
-            if (daysBetween >= 1 && daysBetween <= 10) {
-                return amount.multiply(BigDecimal.valueOf(0.09));
-            }
-        } else {
-            if (daysBetween >= 11 && daysBetween <= 20) {
-                return amount.multiply(BigDecimal.valueOf(0.082));
-            } else if (daysBetween >= 21 && daysBetween <= 30) {
-                return amount.multiply(BigDecimal.valueOf(0.069));
-            } else if (daysBetween >= 31 && daysBetween <= 40) {
-                return amount.multiply(BigDecimal.valueOf(0.047));
-            } else if (daysBetween > 40) {
-                return amount.multiply(BigDecimal.valueOf(0.017));
-            }
-        }
-        return BigDecimal.ZERO;
+        FeeStrategy strategy = feeStrategyFactory.getStrategy(amount, daysBetween);
+        return strategy.calculateFee(amount);
     }
 }

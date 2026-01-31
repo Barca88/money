@@ -20,6 +20,12 @@ import lombok.Data;
  */
 @Data
 public class TransactionRequestDTO {
+    
+    /**
+     * Constructs a new empty TransactionRequestDTO.
+     */
+    public TransactionRequestDTO() {
+    }
 
     /**
      * Account number from which the money will be transferred.
